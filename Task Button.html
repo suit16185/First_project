@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+</head>
+
+<body>
+  <p>Balance ৳<span id ="balance"></span></p>
+  <button id="myButton" onclick="navigateAndDisable()">Go to Google</button>
+
+<script>
+let balance =parseInt(localStorage.getItem("balance")) || 0;
+document.getElementById("balance").innerText=balance;
+document.getElementById("myButton").addEventListener("click",function(){
+  balance += 10;
+  localStorage.setItem("balance",balance);
+  document.getElementById("balance").innerText=balance;
+})
+  // Initialize the button on page load
+  window.onload = function() {
+    const button = document.getElementById('myButton');
+    const lastClicked = localStorage.getItem('lastClicked');
+    
+    if (lastClicked) {
+      const elapsedTime = Date.now() - lastClicked;
+      const oneDay = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      
+      if (elapsedTime < oneDay) {
+        // Disable the button and start the countdown
+        button.disabled = true;
+        const remainingTime = oneDay - elapsedTime;
+        updateTimer(remainingTime); // Start the countdown
+        
+        // Enable the button after the remaining time
+        setTimeout(() => {
+          button.disabled = false;
+          button.innerHTML = "Go to Google"; // Reset the button text
+        }, remainingTime);
+      }
+    }
+  };
+  
+  // Function to handle the button click and disable it
+  function navigateAndDisable() {
+    // Disable the button immediately
+    const button = document.getElementById('myButton');
+    button.disabled = true;
+    const currentTime = Date.now();
+    
+    // Save the current time when the button was clicked
+    localStorage.setItem('lastClicked', currentTime);
+    
+    // Navigate to google.com
+    window.location.href = 'https://www.google.com';
+    
+    // Set the countdown timer
+    const oneDay = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    const remainingTime = oneDay;
+    updateTimer(remainingTime); // Start the countdown
+  }
+  
+  // Function to update the countdown timer on the button
+  function updateTimer(remainingTime) {
+    const button = document.getElementById('myButton');
+    const oneDay = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    const interval = setInterval(function() {
+      const remainingSeconds = Math.max(0, Math.floor(remainingTime / 1000));
+      const hours = Math.floor(remainingSeconds / 3600);
+      const minutes = Math.floor((remainingSeconds % 3600) / 60);
+      const seconds = remainingSeconds % 60;
+      
+      button.innerHTML = `Wait ${hours}:${minutes}:${seconds} Next Task`;
+      
+      remainingTime -= 1000;
+      
+      if (remainingTime <= 0) {
+        clearInterval(interval);
+        button.innerHTML = "Go to Google"; // Reset the button text when re-enabled
+      }
+    }, 1000);
+  };
+
+</script>
+</body>
+
+</html>
